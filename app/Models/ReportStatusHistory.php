@@ -2,18 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Comment extends Model
+class ReportStatusHistory extends Model
 {
-    /** @use HasFactory<\Database\Factories\CommentFactory> */
-    use HasFactory;
-
     protected $fillable = [
         'report_id',
-        'user_id',
-        'content'
+        'status',
+        'changed_by'
     ];
 
     public function report()
@@ -23,6 +19,6 @@ class Comment extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'changed_by');
     }
 }
