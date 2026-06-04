@@ -1,70 +1,29 @@
-# FixYourCity - Beginner Rebuild Guide
+# FixYourCity
 
-This README teaches you how to rebuild this project from zero, step by step, and understand why each part exists.
+A modern community issue reporting application built with Laravel, React, and TypeScript. Users can report local problems like trash, broken roads, and broken lights. Admins can verify, reject, and resolve reports.
 
----
+## Tech Stack
 
-## 1) Project Overview
+- **Backend**: Laravel 11+ with Eloquent ORM
+- **Frontend**: React 18+ with TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: shadcn/ui
+- **Maps**: MapLibre GL JS
+- **Package Manager**: pnpm
+- **Database**: SQLite (default)
+- **Build Tool**: Vite
 
-### What this project does
+## Prerequisites
 
-FixYourCity is a community issue reporting app.
+Make sure you have the following installed:
 
-Users can:
-- Register and log in
-- Create reports (trash, broken road, broken lights, other)
-- Add description, location, and photos
-- See reports on a map
+- PHP 8.3+
+- Composer
+- Node.js 18+
+- pnpm
+- Git
 
-Admins/moderators can:
-- Review reports
-- Change report status (for example: `pending` -> `verified` -> `resolved`)
-- Manage and moderate content
-
-Think of it like this:
-- Laravel is the engine room
-- React is the dashboard users touch
-- Inertia is the bridge between both rooms
-
-### How the stack works together
-
-- **Laravel (backend):** Handles database, validation, business logic, auth, and routing.
-- **Inertia.js:** Sends data from Laravel controllers directly to React pages without building a separate REST API for each screen.
-- **React (frontend):** Renders interactive UI pages and components.
-- **shadcn/ui:** Gives reusable, clean UI building blocks (`Button`, `Card`, `Dialog`, `Table`, etc.).
-- **Wayfinder:** Generates typed route helpers so frontend links/forms match Laravel routes safely.
-
-Data flow in one sentence:
-- Browser requests a route -> Laravel controller loads data -> Inertia returns a React page + props -> React renders UI.
-
----
-
-## 2) Prerequisites
-
-Install these tools first.
-
-### Required tools
-
-1. **PHP 8.3+**
-   - Why: Laravel runs on PHP.
-
-2. **Composer**
-   - Why: Installs PHP packages (`laravel/framework`, `inertiajs/inertia-laravel`, etc.).
-
-3. **Node.js 20+**
-   - Why: Builds and serves the React frontend with Vite.
-
-4. **pnpm** (recommended for this project)
-   - Why: This project already includes `pnpm-lock.yaml`, so pnpm keeps dependency versions consistent.
-
-5. **SQLite** (or MySQL/PostgreSQL)
-   - Why: Stores your app data.
-   - This project is already set up for SQLite by default.
-
-6. **Git**
-   - Why: Version control and collaboration.
-
-### Check your installations
+### Verify installations
 
 ```bash
 php -v
@@ -74,30 +33,222 @@ pnpm -v
 git --version
 ```
 
-If one command fails, install that tool before continuing.
+## Quick Start
 
----
-
-## 3) Project Setup (Step-by-Step)
-
-Below is the full setup flow from an empty machine.
-
-### Step A: Create a new Laravel project
+### 1. Clone and Navigate
 
 ```bash
-composer create-project laravel/laravel fixyourcity
-cd fixyourcity
+git clone <repository-url>
+cd FixYourCity
 ```
 
-What this does:
-- Downloads a fresh Laravel app
-- Creates base folders (`app`, `routes`, `resources`, `database`, ...)
-
-### Step B: Add backend packages (Inertia + Fortify + Wayfinder)
+### 2. Install Dependencies
 
 ```bash
-composer require inertiajs/inertia-laravel laravel/fortify laravel/wayfinder
+composer install
+pnpm install
 ```
+
+### 3. Setup Environment
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+### 4. Database Setup
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+### 5. Run Development Server
+
+**Terminal 1 - Backend**:
+```bash
+php artisan serve
+```
+
+**Terminal 2 - Frontend**:
+```bash
+pnpm run dev
+```
+
+Visit `http://localhost:8000` in your browser.
+
+## Project Structure
+
+```
+FixYourCity/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   ├── Middleware/
+│   │   └── Requests/
+│   ├── Models/
+│   │   ├── Report.php
+│   │   ├── User.php
+│   │   ├── Comment.php
+│   │   ├── City.php
+│   │   └── ...
+│   └── Policies/
+├── resources/
+│   ├── js/
+│   │   ├── pages/
+│   │   ├── components/
+│   │   └── hooks/
+│   └── views/
+├── routes/
+│   ├── web.php
+│   └── api.php
+├── database/
+│   ├── migrations/
+│   ├── factories/
+│   └── seeders/
+└── config/
+```
+
+## Database Schema
+
+### Users
+- id, email, password, name, role (user/admin/moderator)
+
+### Reports
+- id, user_id, title, description, category, status, latitude, longitude, city_id
+
+### ReportImages
+- id, report_id, image_path
+
+### Comments
+- id, report_id, user_id, content
+
+### Cities
+- id, name
+
+### Verifications
+- id, report_id, verified_by, status, note
+
+### ReportStatusHistories
+- id, report_id, from_status, to_status, changed_by
+
+## Features
+
+### Public Features
+- View all reports on homepage
+- See reports with map markers
+- Filter reports by category and status
+
+### User Features
+- Register and login
+- Create new report with:
+  - Title and description
+  - Category selection
+  - Location via map or current location
+  - Image upload
+- View own reports
+- Add comments to reports
+
+### Admin Features
+- Access admin dashboard
+- View all reports
+- Change report status (verified, rejected, resolved)
+- Delete reports
+- View user management
+
+## User Roles
+
+- **User**: Can create and view reports
+- **Admin**: Full access to dashboard and report management
+- **Moderator**: Can verify and change status of reports
+
+## Environment Variables
+
+Create a `.env` file with:
+
+```
+APP_NAME=FixYourCity
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=sqlite
+DB_DATABASE=database/database.sqlite
+
+MAIL_MAILER=log
+```
+
+## Available Commands
+
+### Backend
+
+```bash
+php artisan serve                 # Start Laravel server
+php artisan migrate              # Run migrations
+php artisan migrate:fresh --seed # Reset and seed database
+php artisan tinker               # Interactive shell
+```
+
+### Frontend
+
+```bash
+pnpm run dev      # Start dev server
+pnpm run build    # Build for production
+pnpm run preview  # Preview production build
+pnpm run lint     # Run linter
+```
+
+## Routes
+
+### Public Routes
+- `GET /` - Homepage with all reports
+- `GET /reports/{id}` - View report details
+- `GET /login` - Login page
+- `GET /register` - Registration page
+
+### Authenticated Routes
+- `GET /reports/create` - Create new report
+- `POST /reports` - Store report
+- `GET /reports/{id}/edit` - Edit report
+- `PUT /reports/{id}` - Update report
+- `DELETE /reports/{id}` - Delete report
+- `POST /comments` - Add comment
+
+### Admin Routes
+- `GET /dashboard` - Admin dashboard
+- `PUT /reports/{id}/status` - Update report status
+- `DELETE /reports/{id}` - Delete report
+- `GET /users` - User management
+
+## Development Tips
+
+1. **Hot Reload**: Both backend and frontend support hot reload during development
+2. **Type Safety**: Use TypeScript for all React code
+3. **Form Validation**: Use Form Request classes in Laravel
+4. **Components**: Use shadcn/ui components for consistency
+5. **Styling**: Use Tailwind CSS classes for styling
+
+## Production Build
+
+```bash
+pnpm run build
+php artisan migrate --force
+```
+
+## Contributing
+
+1. Create a feature branch: `git checkout -b feature/your-feature`
+2. Commit changes: `git commit -am 'Add feature'`
+3. Push to branch: `git push origin feature/your-feature`
+4. Submit a pull request
+
+## License
+
+This project is open source and available under the MIT License.
+
+## Support
+
+For issues or questions, please create an issue in the repository.
 
 Why:
 - `inertiajs/inertia-laravel`: Laravel side of Inertia
