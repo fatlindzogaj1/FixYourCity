@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Report;
+use App\Models\User;
 use App\Models\Verification;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -10,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class VerificationFactory extends Factory
 {
+    protected $model = Verification::class;
+
     /**
      * Define the model's default state.
      *
@@ -18,7 +22,10 @@ class VerificationFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'report_id' => Report::factory(),
+            'verified_by' => User::factory(),
+            'status' => fake()->randomElement(['approved', 'rejected']),
+            'note' => fake()->optional()->sentence(),
         ];
     }
 }

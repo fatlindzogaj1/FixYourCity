@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
-#[Fillable(['name', 'email', 'password','role'])]
+#[Fillable(['name', 'email', 'password', 'role'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -44,5 +44,20 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    public function hasAnyRole(array $roles): bool
+    {
+        return in_array($this->role, $roles, true);
+    }
+
+    public function isAdminOrModerator(): bool
+    {
+        return $this->hasAnyRole(['admin', 'moderator']);
     }
 }

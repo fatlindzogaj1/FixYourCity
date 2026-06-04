@@ -18,8 +18,26 @@ class Report extends Model
         'status',
         'latitude',
         'longitude',
-        'city_id'
+        'city_id',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'latitude' => 'float',
+            'longitude' => 'float',
+        ];
+    }
+
+    public static function categories(): array
+    {
+        return ['trash', 'road', 'light', 'other'];
+    }
+
+    public static function statuses(): array
+    {
+        return ['pending', 'verified', 'rejected', 'resolved'];
+    }
 
     public function user()
     {

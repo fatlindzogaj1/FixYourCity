@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Comment;
+use App\Models\Report;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CommentFactory extends Factory
 {
+    protected $model = Comment::class;
+
     /**
      * Define the model's default state.
      *
@@ -18,7 +22,9 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'report_id' => Report::factory(),
+            'user_id' => User::factory(),
+            'content' => fake()->paragraph(),
         ];
     }
 }
